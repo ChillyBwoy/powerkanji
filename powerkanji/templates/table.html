@@ -1,0 +1,79 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+    thead th {
+      text-align: left;
+    }
+
+    td.col_kanji {
+      width: 50px;
+      font-size: 2rem;
+    }
+
+    .container {
+      background: gray;
+      width: 100%;
+    }
+
+    .kanji {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+      text-align: center;
+    }
+
+    .jlpt-1 {
+      background-color: #c3b4d2;
+    }
+
+    .jlpt-2 {
+      background-color: #ff5c5c;
+    }
+
+    .jlpt-3 {
+      background-color: #ffc96f;
+    }
+
+    .jlpt-4 {
+      background-color: #69a2ff;
+    }
+
+    .jlpt-5 {
+      background-color: #61ff76;
+    }
+
+    .kanji_container {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .kanji_item {
+      width: 1.75%;
+      font-size: 1.75vh;
+      text-align: center;
+      outline: 1px solid cyan;
+    }
+  </style>
+
+</head>
+<body>
+  <table>
+    <div class="kanji_container">
+      {% for node in kanji_list %}
+        <div class="kanji_item jlpt-{{ node.jlpt.value }}">{{ node.kanji }}</div>
+      {% endfor %}
+    </div>
+  </table>
+</body>
+</html>
