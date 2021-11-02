@@ -21,10 +21,10 @@ class KanjiBase:
 @dataclass
 class KanjiReading(KanjiBase):
     reading: str
-    meaning: Optional[str]
+    meanings: List[str]
 
     def __repr__(self) -> str:
-        return f'"{self.reading}": "{self.meaning}"';
+        return f'"{self.reading}": "{"; ".join(self.meanings)}"';
 
 
 @dataclass

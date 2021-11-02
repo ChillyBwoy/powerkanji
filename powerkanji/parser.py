@@ -11,7 +11,7 @@ class KanjiParseException(Exception):
 class KanjiNodeParser:
     re_onyomi = re.compile(r"ОН-чтение:\s+(?P<kanji_reading>([^<])+)")
     re_kunyomi = re.compile(r"КУН-чтение:\s+(?P<kanji_reading>([^<])+)")
-    re_reading = re.compile(r"(?P<reading>[ぁ-んァ-ン、]+)(?P<meaning>[^ぁ-んァ-ン]*)")
+    re_reading = re.compile(r"(?P<reading>[ぁ-んァ-ン、\s]+)(?P<meaning>[^ぁ-んァ-ン]*)")
     re_key = re.compile(r"Ключ:\s+(?P<key>(\d+))")
     re_strokes = re.compile(r"Число черт:\s+(?P<strokes>(\d+))")
 
@@ -62,7 +62,16 @@ class KanjiNodeParser:
             return []
 
         reading_search = self.re_reading.findall(match)
-        return [KanjiReading(group[0].strip(), group[1].strip()) for group in reading_search]
+
+        result: List[KanjiReading] = []
+
+        for group in reading_search:
+            reading = group[0].strip()
+            meanings = [s.strip() for s in group[1].strip().split(";")]
+
+            result.append(KanjiReading(reading=reading, meanings=meanings))
+
+        return result
 
     def __parse_key(self, src: str) -> int:
         search = self.re_key.search(src)
