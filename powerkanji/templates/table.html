@@ -62,16 +62,18 @@
       width: 1.75%;
       font-size: 1.75vh;
       text-align: center;
-      outline: 1px solid cyan;
+      outline: 1px solid #333;
     }
   </style>
-
+  <script>
+    window.KANJI = {{ kanji_list }};
+  </script>
 </head>
 <body>
   <table>
     <div class="kanji_container">
       {% for node in kanji_list %}
-        <div class="kanji_item jlpt-{{ node.jlpt.value }}">{{ node.kanji }}</div>
+        <div class="kanji_item jlpt-{{ node.jlpt }}">{{ node.kanji }}</div>
       {% endfor %}
     </div>
   </table>

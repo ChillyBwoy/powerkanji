@@ -3,7 +3,7 @@ from typing import List
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 
-from powerkanji.models import KanjiNode, KanjiReading, Jlpt
+from powerkanji.models import KanjiEntity, KanjiReading, Jlpt
 
 class KanjiParseException(Exception):
     pass
@@ -18,10 +18,10 @@ class KanjiNodeParser:
     def __init__(self, tag: Tag) -> None:
         self.tag = tag
 
-    def parse(self) -> KanjiNode:
+    def parse(self) -> KanjiEntity:
         key, strokes, onyomi, kunyomi = self.__parse_title()
 
-        return KanjiNode(
+        return KanjiEntity(
             kanji=self.__parse_kanji(),
             id=self.__parse_data_id(),
             key=key,
@@ -52,9 +52,9 @@ class KanjiNodeParser:
             case 5:
                 return Jlpt.n5
             case _:
-                raise KanjiParseException(f'Unknown JLPT level: {self.jlpt}')
+                raise KanjiParseException(f'Unknown JLPT level: {jlpt}')
 
-    def __parse_reading(self, src: str, pattern: re.Pattern) -> List[KanjiReading]:
+    def __parse_reading(self, src: str, pattern: re.Pattern[str]) -> List[KanjiReading]:
         search = pattern.search(src)
         match = search.group("kanji_reading") if search else None
 
@@ -75,12 +75,18 @@ class KanjiNodeParser:
 
     def __parse_key(self, src: str) -> int:
         search = self.re_key.search(src)
+        if not search:
+            raise KanjiParseException(f'Invalid key: "{src}"')
+
         value = search.group("key")
 
         return int(value)
 
     def __parse_strokes(self, src: str) -> int:
         search = self.re_strokes.search(src)
+        if not search:
+            raise KanjiParseException(f'Invalid stroke: "{src}"')
+
         value = search.group("strokes")
 
         return int(value)
@@ -101,8 +107,8 @@ class KanjiParser:
     def __init__(self, html: str) -> None:
         self.html = html
 
-    def parse(self) -> List[KanjiNode]:
-        result: List[KanjiNode] = []
+    def parse(self) -> List[KanjiEntity]:
+        result: List[KanjiEntity] = []
             
         soup = BeautifulSoup(self.html, "html.parser")
 
