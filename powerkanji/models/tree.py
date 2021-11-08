@@ -18,13 +18,13 @@ class KanjiNode:
 class KanjiTree:
     root: KanjiNode
 
-    def __init__(self, kanji_list: List[KanjiEntity]) -> None:
+    def __init__(self, kanji_list: KanjiList) -> None:
         self.root = self.__create_from_list(kanji_list)
 
     def __empty_node(self):
         return KanjiNode(jlpt=-1, starts_at=-1, ends_at=-1, kanji_list=[], next_level=None)
 
-    def __create_from_list(self, kanji_list: List[KanjiEntity]) -> KanjiNode:
+    def __create_from_list(self, kanji_list: KanjiList) -> KanjiNode:
         kanji_by_level = KanjiList(kanji_list).group_by_jlpt()
 
         def traverse(result: KanjiNode, count: int = 0):

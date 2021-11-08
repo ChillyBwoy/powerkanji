@@ -3,53 +3,12 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>パワー漢字</title>
 
   <style>
     body {
       padding: 0;
       margin: 0;
-    }
-    thead th {
-      text-align: left;
-    }
-
-    td.col_kanji {
-      width: 50px;
-      font-size: 2rem;
-    }
-
-    .container {
-      background: gray;
-      width: 100%;
-    }
-
-    .kanji {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      line-height: 20px;
-      text-align: center;
-    }
-
-    .jlpt-1 {
-      background-color: #c3b4d2;
-    }
-
-    .jlpt-2 {
-      background-color: #ff5c5c;
-    }
-
-    .jlpt-3 {
-      background-color: #ffc96f;
-    }
-
-    .jlpt-4 {
-      background-color: #69a2ff;
-    }
-
-    .jlpt-5 {
-      background-color: #61ff76;
     }
 
     .kanji_container {
@@ -58,95 +17,69 @@
       flex-wrap: wrap;
     }
 
-    .kanji_item {
-      width: 1.75%;
-      font-size: 1.75vh;
-      text-align: center;
-      outline: 1px solid #333;
-    }
-
-    .row {
+    .kanji-row {
       display: flex;
       width: 100%;
     }
 
     .kanji-cell {
-      font-size: 2vh;
-      outline: 1px solid #333;
+      font-size: calc(100vh / {{ (max_width - 1) }});
       display: flex;
       justify-content: center;
       align-items: center;
+      width: calc(100% / {{ max_width - 1 }});
+      cursor: pointer;
     }
+
+    .kanji-cell_selected {
+      outline: 1px solid #333;
+    }
+
+    .jlpt-1 { background-color: #c3b4d244 }
+    .jlpt-1.kanji-cell_selected { background-color: #c3b4d2 }
+    
+    .jlpt-2 { background-color: #ff5c5c44 }
+    .jlpt-2.kanji-cell_selected { background-color: #ff5c5c }
+
+    .jlpt-3 { background-color: #ffc96f44 }
+    .jlpt-3.kanji-cell_selected { background-color: #ffc96f }
+
+    .jlpt-4 { background-color: #69a2ff44 }
+    .jlpt-4.kanji-cell_selected { background-color: #69a2ff }
+
+    .jlpt-5 { background-color: #61ff7644; }
+    .jlpt-5.kanji-cell_selected { background-color: #61ff76 }
   </style>
-  <script>
-    window.KANJI = {{ kanji_list }};
-  </script>
 </head>
 <body>
-  {#
-  <div class="kanji_container">
-    {% for node in kanji_list %}
-      <div class="kanji_item jlpt-{{ node.jlpt }}">{{ node.kanji }}</div>
+  <div class="kanji_container" id="root">
+    {% for i in range(0, max_height) -%}
+      <div class="kanji-row">
+        {%- for j in range(0, max_width) -%}
+          {% set curr = kanji_grouped|find_first_group(j) %}
+          {%- if curr -%}
+            {% set kan = curr["kanji"].pop() %}
+            {% if kan -%}
+              <div class="kanji-cell jlpt-{{ kan.jlpt.value }}">
+                {{- kan.kanji -}}
+              </div>
+            {%- endif %}
+          {%- else %}
+            <div class="kanji-cell">&nbsp;</div>
+          {%- endif -%}
+        {% endfor %}
+      </div>
     {% endfor %}
   </div>
-  #}
-  <div class="kanji_container" id="root"></div>
 
   <script>
-    function groupByJlpt(list) {
-      let result = [];
-      for (let i = 0; i < list.length; i++) {
-        let item = list[i];
-        if (!result[item.jlpt - 1]) {
-          result[item.jlpt - 1] = []
-        }
-        result[item.jlpt - 1].push(item);
+    document.getElementById('root').addEventListener('click', function (event) {
+      var target = event.target;
+
+      if (target && target.classList.contains('kanji-cell')) {
+        target.classList.toggle('kanji-cell_selected')
       }
-      result.reverse();
-      return result;
-    }
-
-    const $root = document.getElementById('root');
-
-    const kanjiByJlpt = groupByJlpt(KANJI).reduce((acc, kanji, i, arr) => {
-      const count = kanji.length + (acc[i - 1]?.count || 0);
-      const size = Math.floor(Math.sqrt(count));
-
-      acc.push({ size, count, kanji });
-
-      return acc;
-    }, []);
-
-    const max = Math.ceil(Math.sqrt(KANJI.length));
-    const kanjiCharStyle = `width: calc(100% / ${max - 1})`;
-
-    for (let i = 0; i < max; i++) {
-      const $row = document.createElement('div');
-      $row.classList.add('row');
-
-      for (let j = 0; j < max; j++) {
-        const curr = kanjiByJlpt.find(item => j < item.size && item.kanji.length > 0);
-
-        if (!curr) {
-          continue;
-        }
-        
-        const kan = curr.kanji.pop();
-        if (!kan) {
-          continue;
-        }
-
-        const $col = document.createElement('div');
-        $col.classList.add('kanji-cell');
-        $col.classList.add(`jlpt-${kan.jlpt}`);
-        $col.style = kanjiCharStyle;
-        $col.innerText = kan.kanji
-
-        $row.appendChild($col);
-      }
-
-      $root.appendChild($row);
-    }
+    });
   </script>
 </body>
 </html>
