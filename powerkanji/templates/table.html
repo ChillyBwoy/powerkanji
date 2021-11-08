@@ -64,18 +64,89 @@
       text-align: center;
       outline: 1px solid #333;
     }
+
+    .row {
+      display: flex;
+      width: 100%;
+    }
+
+    .kanji-cell {
+      font-size: 2vh;
+      outline: 1px solid #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   </style>
   <script>
     window.KANJI = {{ kanji_list }};
   </script>
 </head>
 <body>
-  <table>
-    <div class="kanji_container">
-      {% for node in kanji_list %}
-        <div class="kanji_item jlpt-{{ node.jlpt }}">{{ node.kanji }}</div>
-      {% endfor %}
-    </div>
-  </table>
+  {#
+  <div class="kanji_container">
+    {% for node in kanji_list %}
+      <div class="kanji_item jlpt-{{ node.jlpt }}">{{ node.kanji }}</div>
+    {% endfor %}
+  </div>
+  #}
+  <div class="kanji_container" id="root"></div>
+
+  <script>
+    function groupByJlpt(list) {
+      let result = [];
+      for (let i = 0; i < list.length; i++) {
+        let item = list[i];
+        if (!result[item.jlpt - 1]) {
+          result[item.jlpt - 1] = []
+        }
+        result[item.jlpt - 1].push(item);
+      }
+      result.reverse();
+      return result;
+    }
+
+    const $root = document.getElementById('root');
+
+    const kanjiByJlpt = groupByJlpt(KANJI).reduce((acc, kanji, i, arr) => {
+      const count = kanji.length + (acc[i - 1]?.count || 0);
+      const size = Math.floor(Math.sqrt(count));
+
+      acc.push({ size, count, kanji });
+
+      return acc;
+    }, []);
+
+    const max = Math.ceil(Math.sqrt(KANJI.length));
+    const kanjiCharStyle = `width: calc(100% / ${max - 1})`;
+
+    for (let i = 0; i < max; i++) {
+      const $row = document.createElement('div');
+      $row.classList.add('row');
+
+      for (let j = 0; j < max; j++) {
+        const curr = kanjiByJlpt.find(item => j < item.size && item.kanji.length > 0);
+
+        if (!curr) {
+          continue;
+        }
+        
+        const kan = curr.kanji.pop();
+        if (!kan) {
+          continue;
+        }
+
+        const $col = document.createElement('div');
+        $col.classList.add('kanji-cell');
+        $col.classList.add(`jlpt-${kan.jlpt}`);
+        $col.style = kanjiCharStyle;
+        $col.innerText = kan.kanji
+
+        $row.appendChild($col);
+      }
+
+      $root.appendChild($row);
+    }
+  </script>
 </body>
 </html>

@@ -3,7 +3,7 @@ from typing import List
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 
-from powerkanji.models import KanjiEntity, KanjiReading, Jlpt
+from powerkanji.models import KanjiEntity, KanjiList, KanjiReading, Jlpt
 
 class KanjiParseException(Exception):
     pass
@@ -23,7 +23,7 @@ class KanjiNodeParser:
 
         return KanjiEntity(
             kanji=self.__parse_kanji(),
-            id=self.__parse_data_id(),
+            ext_id=self.__parse_data_id(),
             key=key,
             strokes=strokes,
             jlpt=self.__parse_jlpt(),
@@ -107,7 +107,7 @@ class KanjiParser:
     def __init__(self, html: str) -> None:
         self.html = html
 
-    def parse(self) -> List[KanjiEntity]:
+    def parse(self) -> KanjiList:
         result: List[KanjiEntity] = []
             
         soup = BeautifulSoup(self.html, "html.parser")
@@ -117,4 +117,4 @@ class KanjiParser:
 
             result.append(node.parse())
 
-        return result
+        return KanjiList(result)

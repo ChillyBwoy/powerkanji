@@ -2,8 +2,8 @@ import os
 import json
 from typing import List
 from jinja2 import Environment, FileSystemLoader
-from powerkanji.models import KanjiEntity, KanjiTree
 
+from powerkanji.models import KanjiEntity, KanjiTree
 from powerkanji.parser import KanjiParser
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
