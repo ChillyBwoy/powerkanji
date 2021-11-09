@@ -1,85 +1,32 @@
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>パワー漢字</title>
+{% extends "base.html" %}
 
-  <style>
-    body {
-      padding: 0;
-      margin: 0;
-    }
+{% block content %}
+<style>
+  .kanji-cell {
+    font-size: calc(100vh / {{ (max_width - 1) }});
+    width: calc(100% / {{ max_width - 1 }});
+  }
+</style>
 
-    .kanji_container {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-    }
+<div class="kanji_container" id="root">
+  {% for i in range(0, max_height) -%}
+    <div class="kanji-row">
+      {%- for j in range(0, max_width) -%}
+        {% set curr = kanji_grouped|find_first_group(j) %}
+        {%- if curr -%}
+          {% set kan = curr["kanji"].pop() %}
+          {% if kan -%}
+            <div class="kanji-cell jlpt-{{ kan.jlpt.value }}" data-ext-id="{{ kan.ext_id }}">
+              {{- kan.kanji -}}
+            </div>
+          {%- endif %}
+        {%- else %}
+          <div class="kanji-cell">&nbsp;</div>
+        {%- endif -%}
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>
 
-    .kanji-row {
-      display: flex;
-      width: 100%;
-    }
-
-    .kanji-cell {
-      font-size: calc(100vh / {{ (max_width - 1) }});
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: calc(100% / {{ max_width - 1 }});
-      cursor: pointer;
-    }
-
-    .kanji-cell_selected {
-      outline: 1px solid #333;
-    }
-
-    .jlpt-1 { background-color: #c3b4d244 }
-    .jlpt-1.kanji-cell_selected { background-color: #c3b4d2 }
-    
-    .jlpt-2 { background-color: #ff5c5c44 }
-    .jlpt-2.kanji-cell_selected { background-color: #ff5c5c }
-
-    .jlpt-3 { background-color: #ffc96f44 }
-    .jlpt-3.kanji-cell_selected { background-color: #ffc96f }
-
-    .jlpt-4 { background-color: #69a2ff44 }
-    .jlpt-4.kanji-cell_selected { background-color: #69a2ff }
-
-    .jlpt-5 { background-color: #61ff7644; }
-    .jlpt-5.kanji-cell_selected { background-color: #61ff76 }
-  </style>
-</head>
-<body>
-  <div class="kanji_container" id="root">
-    {% for i in range(0, max_height) -%}
-      <div class="kanji-row">
-        {%- for j in range(0, max_width) -%}
-          {% set curr = kanji_grouped|find_first_group(j) %}
-          {%- if curr -%}
-            {% set kan = curr["kanji"].pop() %}
-            {% if kan -%}
-              <div class="kanji-cell jlpt-{{ kan.jlpt.value }}">
-                {{- kan.kanji -}}
-              </div>
-            {%- endif %}
-          {%- else %}
-            <div class="kanji-cell">&nbsp;</div>
-          {%- endif -%}
-        {% endfor %}
-      </div>
-    {% endfor %}
-  </div>
-
-  <script>
-    document.getElementById('root').addEventListener('click', function (event) {
-      var target = event.target;
-
-      if (target && target.classList.contains('kanji-cell')) {
-        target.classList.toggle('kanji-cell_selected')
-      }
-    });
-  </script>
-</body>
-</html>
+<script src="./js/app.js" type="text/javascript"></script>
+{% endblock %}
