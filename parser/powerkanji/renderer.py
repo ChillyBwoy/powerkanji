@@ -13,7 +13,10 @@ def find_first_group(input: List[KanjiListGroup], idx: int):
         return matched[0]
 
 
-tpl_env = Environment(loader=FileSystemLoader(os.path.join("powerkanji", "templates")), autoescape=False)
+tpl_env = Environment(
+    loader=FileSystemLoader(os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates")),
+    autoescape=False,
+)
 tpl_env.filters["find_first_group"] = find_first_group
 
 
