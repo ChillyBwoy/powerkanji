@@ -27,7 +27,7 @@ class KanjiHTMLRenderer:
     def render_html(self, kanji_list: KanjiList) -> str:
         max_height = math.ceil(len(kanji_list) / self.width)
         kanji_grouped = kanji_list.regroup(self.width)
-        tpl = tpl_env.get_template("table.html")
+        tpl = tpl_env.get_template("grid.html")
 
         return tpl.render(
             kanji_grouped=kanji_grouped,

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  .kanji-cell {
+    font-size: calc(100vh / {{ max_width }});
+  }
+
+  .kanji_container {
+    display: grid;
+    grid-template-columns: repeat({{ max_width }}, 1fr);
+  }
+</style>
+
+<div class="kanji_container" id="kanji_grid">
+  {% for i in range(0, max_height) -%}
+    {%- for j in range(0, max_width) -%}
+      {% set curr = kanji_grouped|find_first_group(j) %}
+      {%- if curr -%}
+        {% set kan = curr["kanji"].pop() %}
+        {% if kan -%}
+          <div class="kanji-cell jlpt-{{ kan.jlpt.value }}" data-ext-id="{{ kan.ext_id }}">
+            {{- kan.kanji -}}
+          </div>
+        {%- endif %}
+      {%- endif -%}
+    {% endfor %}
+  {% endfor %}
+</div>
+{% endblock %}

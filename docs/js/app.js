@@ -1,5 +1,5 @@
 window.addEventListener("DOMContentLoaded", () => {
-  const $root = document.getElementById("root");
+  const $kanjiGrid = document.getElementById("kanji_grid");
   const lsKey = "powerkanji_selected_kanji";
   const attrIdKey = "data-ext-id";
   const classNameSelected = "kanji-cell_selected";
@@ -22,11 +22,15 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  $root.addEventListener("click", (event) => {
+  $kanjiGrid.addEventListener("click", (event) => {
     const target = event.target;
 
     if (target && target.classList.contains("kanji-cell")) {
       const { extId } = target.dataset;
+
+      if (!extId) {
+        return;
+      }
 
       if (dataSelected.includes(extId)) {
         target.classList.remove(classNameSelected);
