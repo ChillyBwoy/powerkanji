@@ -1,0 +1,14 @@
+[server]
+bind_addr = ":8080"
+
+[logging]
+log_level = "debug"
+
+[database]
+db_host = "localhost"
+db_name = "powerkanji"
+db_user = "powerkanji"
+db_pass = "password"
+
+[security]
+secret_key = ""
